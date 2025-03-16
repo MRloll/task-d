@@ -14,8 +14,10 @@ const { usersData, loading, params, headers, itemToUpdate } = storeToRefs(usersS
 const showModal = ref(false)
 const showDeleteModal = ref(false)
 const btnLoading = ref(false)
+const isCreate = ref(true)
 
 const setEditUser = (item: User) => {
+  isCreate.value = false
   showModal.value = true
   itemToUpdate.value = item
 }
@@ -31,6 +33,11 @@ const callDeleteUser = async () => {
   btnLoading.value = false
   showDeleteModal.value = false
 }
+
+const showCreate = () => {
+  showModal.value = true
+  isCreate.value = true
+}
 </script>
 <template>
   <div>
@@ -45,7 +52,12 @@ const callDeleteUser = async () => {
         </v-btn>
       </template>
     </Modal>
-    <AddEditUser v-model="showModal" :is-create="false" />
+    <AddEditUser v-model="showModal" :is-create="isCreate" />
+    <div class="d-flex justify-end mb-5">
+      <v-btn @click="showCreate()" size="small" color="primary" flat>
+        <v-icon>mdi-plus</v-icon>
+      </v-btn>
+    </div>
     <Table
       :total-items="usersData.total"
       :items-per-page="params.limit"

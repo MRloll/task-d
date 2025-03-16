@@ -35,7 +35,6 @@ export async function fetchUsers({
 
   let filteredUsers = users
 
-  // ✅ تطبيق البحث العام على بعض الحقول (name, email, role)
   if (search) {
     const searchLower = search.toLowerCase()
     filteredUsers = filteredUsers.filter(
@@ -47,7 +46,6 @@ export async function fetchUsers({
     )
   }
 
-  // ✅ تطبيق الفلترة حسب الحقول المحددة
   Object.keys(filter).forEach((key) => {
     if (filter[key]) {
       filteredUsers = filteredUsers.filter((user) =>
@@ -58,7 +56,6 @@ export async function fetchUsers({
     }
   })
 
-  // ✅ الترتيب بناءً على `sortBy`
   if (sortBy.length > 0) {
     filteredUsers.sort((a, b) => {
       for (const sort of sortBy) {
@@ -72,7 +69,6 @@ export async function fetchUsers({
     })
   }
 
-  // ✅ تقسيم البيانات إلى صفحات
   const start = (page - 1) * itemsPerPage
   const paginatedUsers = filteredUsers.slice(start, start + itemsPerPage)
 

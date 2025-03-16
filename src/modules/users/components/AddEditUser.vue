@@ -11,7 +11,7 @@ const { createTextField, createSelectField, createTextareaField } = useField()
 const modelValue = defineModel<boolean>('modelValue')
 const props = defineProps<{ isCreate: boolean }>()
 const usersStore = useUsersStore()
-const { updateItem } = usersStore
+const { updateItem, addUser } = usersStore
 const { itemToUpdate } = storeToRefs(usersStore)
 
 const form = ref<any>(null)
@@ -80,18 +80,27 @@ const callUpdateUser = async () => {
   try {
     await form.value.validate()
     btnLoading.value = true
-    await updateItem(itemToUpdate.value?.id, transfromSchemaToObject(schema.value))
+    if (props.isCreate) {
+      await addUser(transfromSchemaToObject(schema.value))
+    } else {
+      await updateItem(itemToUpdate.value?.id, transfromSchemaToObject(schema.value))
+    }
     btnLoading.value = false
     modelValue.value = false
   } catch (error) {
     console.error(error)
   }
 }
+
 watch(
   () => modelValue.value,
   () => {
     if (modelValue.value && !props.isCreate) {
       setValuesToSchema(schema.value, itemToUpdate.value)
+    } else {
+      schema.value.forEach((field) => {
+        field.value = ''
+      })
     }
   },
 )
@@ -101,7 +110,7 @@ watch(
 
 <template>
   <div>
-    <Modal title="add_user" v-model="modelValue">
+    <Modal :title="isCreate ? 'add_user' : 'edit_user'" v-model="modelValue">
       <template #content>
         <GenericForm ref="form" :schema="schema"> </GenericForm>
       </template>

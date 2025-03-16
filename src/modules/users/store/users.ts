@@ -1,10 +1,9 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { type User } from '@/types'
-import { fetchUsers, updateUser, deleteUser } from '@/mockApi'
+import { fetchUsers, updateUser, deleteUser, fetchUserById, createUser } from '@/mockApi'
 import { useAlertStore } from '@/stores/alert'
 import { useI18n } from 'vue-i18n'
-import { id } from 'vuetify/lib/locale/index.mjs'
 
 export const useUsersStore = defineStore('users', () => {
   // =================
@@ -62,7 +61,6 @@ export const useUsersStore = defineStore('users', () => {
   // NOTE: Actions
   // =================
   const getUsers = async (params: any) => {
-    console.log(params)
     try {
       loading.value = true
       const response = await fetchUsers({ ...params })
@@ -81,6 +79,8 @@ export const useUsersStore = defineStore('users', () => {
       if (index !== -1) {
         usersData.value.data[index] = user
       }
+      itemToUpdate.value = user
+      console.log(user)
     } catch (error) {
       showErrorAlert(t('error_updating_user'))
     }
@@ -95,5 +95,37 @@ export const useUsersStore = defineStore('users', () => {
       showErrorAlert(t('error_deleting_user'))
     }
   }
-  return { params, usersData, headers, loading, getUsers, itemToUpdate, updateItem, deleteItem }
+
+  const getSingleUser = async (id: number): Promise<User | undefined> => {
+    try {
+      const response = await fetchUserById(id)
+      itemToUpdate.value = response
+      return response
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const addUser = async (data: User) => {
+    try {
+      const response = await createUser(data)
+      showSuccessAlert(t('user_created_successfully'))
+      usersData.value.data.unshift(response)
+      return response
+    } catch (error) {
+      showErrorAlert(t('error_creating_user'))
+    }
+  }
+  return {
+    params,
+    usersData,
+    headers,
+    loading,
+    getUsers,
+    itemToUpdate,
+    updateItem,
+    deleteItem,
+    getSingleUser,
+    addUser,
+  }
 })

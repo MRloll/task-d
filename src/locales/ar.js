@@ -16,4 +16,5 @@ export default {
   error_updating_user: 'حدث خطأ أثناء تحديث المستخدم',
   user_deleted_successfully: 'تم حذف المستخدم بنجاح',
   error_deleting_user: 'حدث خطأ أثناء حذف المستخدم',
+  edit_user: 'تحرير المستخدم',
 }
