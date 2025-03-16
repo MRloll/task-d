@@ -4,6 +4,7 @@ import { type User } from '@/types'
 import { fetchUsers, updateUser, deleteUser, fetchUserById, createUser } from '@/mockApi'
 import { useAlertStore } from '@/stores/alert'
 import { useI18n } from 'vue-i18n'
+import { roles } from '@/constants/permissions'
 
 export const useUsersStore = defineStore('users', () => {
   // =================
@@ -33,35 +34,29 @@ export const useUsersStore = defineStore('users', () => {
     search?: string
   })
 
-  const headers = ref([
+  const headers = computed(() => [
     {
-      title: 'Name',
+      title: t('name'),
       key: 'name',
       sortable: false,
     },
     {
-      title: 'Email',
+      title: t('email'),
       key: 'email',
     },
     {
-      title: 'Role',
+      title: t('role'),
       key: 'role',
     },
     {
-      title: 'Actions',
+      title: t('actions'),
       key: 'actions',
       sortable: false,
     },
   ])
 
-  const roles = ref({
-    admin: ['create_user', 'edit_user', 'delete_user', 'read_user', 'view_reports', 'manage_roles'],
-    editor: ['edit_user', 'create_user', 'delete_user'],
-    viewer: ['view_reports'],
-  })
-
   const currentuser = ref({
-    permissions: roles.value.admin,
+    permissions: roles.admin,
   })
 
   // =================
@@ -69,7 +64,7 @@ export const useUsersStore = defineStore('users', () => {
   // =================
 
   const changeUserRole = (role: string) => {
-    currentuser.value.permissions = roles.value[role as keyof typeof roles]
+    currentuser.value.permissions = roles[role as keyof typeof roles]
   }
 
   const getUsers = async (params: any) => {

@@ -1,9 +1,5 @@
 import { type User } from './types'
-const roles = {
-  admin: ['create_user', 'edit_user', 'delete_user', 'read_user', 'view_reports', 'manage_roles'],
-  editor: ['edit_user', 'view_reports', 'read_user'],
-  viewer: ['view_reports'],
-}
+import { roles } from '@/constants/permissions'
 
 const users: User[] = Array.from({ length: 50 }, (_, i) => {
   const role = ['admin', 'editor', 'viewer'][Math.floor(Math.random() * 3)] as keyof typeof roles
