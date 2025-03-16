@@ -21,23 +21,58 @@ function simulateLatency() {
 export async function fetchUsers({
   page = 1,
   itemsPerPage = 10,
-  sortBy = 'id',
-  filterRole,
+  sortBy = [],
+  search = '',
+  filter = {},
 }: {
   page?: number
   itemsPerPage?: number
-  sortBy?: keyof User
-  filterRole?: User['role']
+  sortBy?: { key: string; order: 'asc' | 'desc' }[]
+  search?: string
+  filter?: { [key: string]: string }
 }) {
   await simulateLatency()
 
   let filteredUsers = users
-  if (filterRole) {
-    filteredUsers = users.filter((user) => user.role === filterRole)
+
+  // ✅ تطبيق البحث العام على بعض الحقول (name, email, role)
+  if (search) {
+    const searchLower = search.toLowerCase()
+    filteredUsers = filteredUsers.filter(
+      (user) =>
+        user.first_name.toLowerCase().includes(searchLower) ||
+        user.last_name.toLowerCase().includes(searchLower) ||
+        user.email.toLowerCase().includes(searchLower) ||
+        user.role.toLowerCase().includes(searchLower),
+    )
   }
 
-  filteredUsers.sort((a, b) => (a[sortBy] > b[sortBy] ? 1 : -1))
+  // ✅ تطبيق الفلترة حسب الحقول المحددة
+  Object.keys(filter).forEach((key) => {
+    if (filter[key]) {
+      filteredUsers = filteredUsers.filter((user) =>
+        String(user[key as keyof User])
+          .toLowerCase()
+          .includes(filter[key].toLowerCase()),
+      )
+    }
+  })
 
+  // ✅ الترتيب بناءً على `sortBy`
+  if (sortBy.length > 0) {
+    filteredUsers.sort((a, b) => {
+      for (const sort of sortBy) {
+        const key = sort.key as keyof User
+        const order = sort.order === 'desc' ? -1 : 1
+
+        if (a[key] > b[key]) return order
+        if (a[key] < b[key]) return -order
+      }
+      return 0
+    })
+  }
+
+  // ✅ تقسيم البيانات إلى صفحات
   const start = (page - 1) * itemsPerPage
   const paginatedUsers = filteredUsers.slice(start, start + itemsPerPage)
 

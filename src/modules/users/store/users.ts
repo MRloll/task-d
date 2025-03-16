@@ -39,6 +39,7 @@ export const useUsersStore = defineStore('users', () => {
     {
       title: 'Name',
       key: 'name',
+      sortable: false,
     },
     {
       title: 'Email',
@@ -54,16 +55,17 @@ export const useUsersStore = defineStore('users', () => {
       sortable: false,
     },
   ])
+
   const loading = ref(false)
 
   // =================
   // NOTE: Actions
   // =================
   const getUsers = async (params: any) => {
+    console.log(params)
     try {
       loading.value = true
-      console.log(params)
-      const response = await fetchUsers(params)
+      const response = await fetchUsers({ ...params })
       usersData.value = response
       loading.value = false
     } catch (error) {

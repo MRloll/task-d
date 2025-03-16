@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-defineProps<{
+import { ref, watch } from 'vue'
+const props = defineProps<{
   serverItems: any[]
   totalItems: number
   loading: boolean
@@ -9,17 +9,18 @@ defineProps<{
   loadItems: any
   headers: any[]
 }>()
-const searchValue = ref('')
+const searchQuery = ref('')
 </script>
 
 <template>
   <div>
+    <v-text-field v-model="searchQuery" label="Search" prepend-inner-icon="mdi-magnify" clearable />
     <v-data-table-server
       :items-per-page="itemsPerPage"
       :items="serverItems"
       :items-length="totalItems"
       :loading="loading"
-      :search="search"
+      :search="searchQuery"
       item-value="name"
       @update:options="loadItems"
       :headers="headers"
@@ -27,20 +28,6 @@ const searchValue = ref('')
       <template #item.name="{ item }"> {{ item.first_name + ' ' + item.last_name }}</template>
       <template #item.actions="{ item }">
         <slot name="actions" v-bind="{ item }"></slot>
-      </template>
-      <template v-slot:tfoot>
-        <tr>
-          <td>
-            <v-text-field
-              v-model="searchValue"
-              @input=""
-              class="ma-2"
-              density="compact"
-              placeholder="Search email..."
-              hide-details
-            ></v-text-field>
-          </td>
-        </tr>
       </template>
     </v-data-table-server>
   </div>
