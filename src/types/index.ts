@@ -28,4 +28,5 @@ export type User = {
   email: string
   role: 'admin' | 'editor' | 'viewer'
   brief: string
+  permissions: string[]
 }

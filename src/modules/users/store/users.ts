@@ -11,14 +11,13 @@ export const useUsersStore = defineStore('users', () => {
   // =================
   const { t } = useI18n()
   const { showSuccessAlert, showErrorAlert } = useAlertStore()
-
+  const loading = ref(false)
   const params = ref({
     page: 1,
     limit: 10,
     search: '',
     sortBy: { key: 'name', order: 'asc' },
   })
-
   const itemToUpdate = ref({} as User)
   const usersData = ref({
     data: [],
@@ -55,11 +54,24 @@ export const useUsersStore = defineStore('users', () => {
     },
   ])
 
-  const loading = ref(false)
+  const roles = ref({
+    admin: ['create_user', 'edit_user', 'delete_user', 'read_user', 'view_reports', 'manage_roles'],
+    editor: ['edit_user', 'create_user', 'delete_user'],
+    viewer: ['view_reports'],
+  })
+
+  const currentuser = ref({
+    permissions: roles.value.admin,
+  })
 
   // =================
   // NOTE: Actions
   // =================
+
+  const changeUserRole = (role: string) => {
+    currentuser.value.permissions = roles.value[role as keyof typeof roles]
+  }
+
   const getUsers = async (params: any) => {
     try {
       loading.value = true
@@ -127,5 +139,7 @@ export const useUsersStore = defineStore('users', () => {
     deleteItem,
     getSingleUser,
     addUser,
+    changeUserRole,
+    currentuser,
   }
 })

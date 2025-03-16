@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import AddEditUser from '../components/AddEditUser.vue'
-import { type User } from '@/types'
 import { storeToRefs } from 'pinia'
 import { useRoute } from 'vue-router'
 import { ref } from 'vue'
@@ -40,6 +39,14 @@ const setEditUser = () => {
           <tr>
             <td>{{ $t('biref') }}</td>
             <td>{{ itemToUpdate?.brief }}</td>
+          </tr>
+          <tr>
+            <td>{{ $t('permission') }}</td>
+            <td>
+              <v-chip v-for="permission in itemToUpdate?.permissions" :key="permission">
+                {{ permission }}
+              </v-chip>
+            </td>
           </tr>
         </tbody>
       </v-table>

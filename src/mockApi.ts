@@ -1,18 +1,23 @@
 import { type User } from './types'
+const roles = {
+  admin: ['create_user', 'edit_user', 'delete_user', 'read_user', 'view_reports', 'manage_roles'],
+  editor: ['edit_user', 'view_reports', 'read_user'],
+  viewer: ['view_reports'],
+}
 
-const users: User[] = Array.from({ length: 50 }, (_, i) => ({
-  id: i + 1,
-  first_name: `first name ${i + 1}`,
-  last_name: `last name`,
-  email: `user${i + 1}@example.com`,
-  role: ['admin', 'editor', 'viewer'][Math.floor(Math.random() * 3)] as
-    | 'admin'
-    | 'editor'
-    | 'viewer',
-  brief: `loren ipsum ${i + 1}`,
-}))
+const users: User[] = Array.from({ length: 50 }, (_, i) => {
+  const role = ['admin', 'editor', 'viewer'][Math.floor(Math.random() * 3)] as keyof typeof roles
 
-const roles = ['admin', 'editor', 'viewer']
+  return {
+    id: i + 1,
+    first_name: `first name ${i + 1}`,
+    last_name: `last name`,
+    email: `user${i + 1}@example.com`,
+    role,
+    permissions: roles[role], // ✅ إضافة الصلاحيات بناءً على الدور
+    brief: `lorem ipsum ${i + 1}`,
+  }
+})
 
 function simulateLatency() {
   return new Promise((resolve) => setTimeout(resolve, Math.random() * 500 + 300))
@@ -84,7 +89,11 @@ export async function fetchUserById(id: number) {
   await simulateLatency()
   const user = users.find((u) => u.id === id)
   if (!user) throw new Error('User not found')
-  return user
+
+  return {
+    ...user,
+    permissions: roles[user.role as keyof typeof roles],
+  }
 }
 
 export async function createUser(data: Omit<User, 'id'>) {

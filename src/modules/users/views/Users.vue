@@ -54,11 +54,18 @@ const showCreate = () => {
     </Modal>
     <AddEditUser v-model="showModal" :is-create="isCreate" />
     <div class="d-flex justify-end mb-5">
-      <v-btn @click="showCreate()" size="small" color="primary" flat>
+      <v-btn
+        v-has-permission="['create_user']"
+        @click="showCreate()"
+        size="small"
+        color="primary"
+        flat
+      >
         <v-icon>mdi-plus</v-icon>
       </v-btn>
     </div>
     <Table
+      v-has-permission="['create_user', 'edit_user', 'delete_user', 'read_user']"
       :total-items="usersData.total"
       :items-per-page="params.limit"
       :loadItems="getUsers"
@@ -70,6 +77,7 @@ const showCreate = () => {
       <template #actions="{ item }">
         <div class="d-flex align-center ga-3">
           <v-btn
+            v-has-permission="['edit_user']"
             size="small"
             color="primary"
             flat
@@ -77,6 +85,7 @@ const showCreate = () => {
             @click="setEditUser(item)"
           ></v-btn>
           <v-btn
+            v-has-permission="['delete_user']"
             size="small"
             color="error"
             flat
@@ -84,6 +93,7 @@ const showCreate = () => {
             @click="setDeleteUser(item)"
           ></v-btn>
           <v-btn
+            v-has-permission="['read_user']"
             size="small"
             color="secondary"
             :to="`/users/${item.id}`"

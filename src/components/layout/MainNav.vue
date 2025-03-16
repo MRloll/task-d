@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import LanguageMenu from '../app/LanguageMenu.vue'
 import ThemeSwitch from '../app/ThemeSwitch.vue'
+import { useUsersStore } from '@/modules/users/store/users'
+const { changeUserRole } = useUsersStore()
 </script>
 
 <template>
@@ -16,11 +18,14 @@ import ThemeSwitch from '../app/ThemeSwitch.vue'
           </v-avatar>
         </template>
         <v-list>
-          <v-list-item @click="">
+          <v-list-item @click="changeUserRole('admin')">
             <v-list-item-title>{{ $t('admin') }}</v-list-item-title>
           </v-list-item>
-          <v-list-item @click="">
-            <v-list-item-title>{{ $t('user') }}</v-list-item-title>
+          <v-list-item @click="changeUserRole('editor')">
+            <v-list-item-title>{{ $t('editor') }}</v-list-item-title>
+          </v-list-item>
+          <v-list-item @click="changeUserRole('viewer')">
+            <v-list-item-title>{{ $t('viewer') }}</v-list-item-title>
           </v-list-item>
         </v-list>
       </v-menu>
