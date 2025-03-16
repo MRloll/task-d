@@ -1,66 +1,86 @@
 <script lang="ts" setup>
-import { ref, type Ref } from 'vue'
-import { useField } from '@/composables/useField'
-import { setValuesToSchema, transfromSchemaToObject } from '@/utils/formDataUtils'
-import GenericForm from '@/components/common/GenericForm.vue'
-const { createTextField, createSelectField, createTextareaField } = useField()
+import Modal from '@/components/common/Modal.vue'
+import Table from '@/components/common/Table.vue'
+import AddEditUser from '../components/AddEditUser.vue'
+import { ref } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useUsersStore } from '../store/users'
+import type { User } from '@/types'
 
-const schema = ref([
-  createTextField({
-    filedKey: 'first_name',
-    label: 'labels.first_name',
-    cols: { md: 12, lg: 6 },
-    value: '',
-    icon: 'eye',
-    required: true,
-  }),
-  createSelectField({
-    filedKey: 'last_name',
-    label: 'labels.last_name',
-    cols: { md: 12, lg: 6 },
-    value: '',
-    itemTitle: 'title',
-    itemValue: 'value',
-    required: true,
-    options: [
-      {
-        value: '1',
-        title: 'title',
-      },
-    ],
-  }),
-  createTextareaField({
-    filedKey: 'brief',
-    label: 'labels.brief',
-    cols: { md: 12, lg: 6 },
-    value: '',
-    icon: 'eye',
-    required: true,
-  }),
-  {
-    type: 'slot',
-    cols: { md: 12, lg: 6 },
-    filedKey: 'association_name',
-  },
-])
+const usersStore = useUsersStore()
+const { getUsers, deleteItem } = usersStore
+const { usersData, loading, params, headers, itemToUpdate } = storeToRefs(usersStore)
 
-const fromData = {
-  first_name: 'dasd',
-  last_name: 'asd',
-  brief: 'asd',
+const showModal = ref(false)
+const showDeleteModal = ref(false)
+const btnLoading = ref(false)
+
+const setEditUser = (item: User) => {
+  showModal.value = true
+  itemToUpdate.value = item
 }
 
-const form: Ref<any> = ref(null)
+const setDeleteUser = (item: User) => {
+  itemToUpdate.value = item
+  showDeleteModal.value = true
+}
 
-setValuesToSchema(schema.value, fromData)
+const callDeleteUser = async () => {
+  btnLoading.value = true
+  await deleteItem(itemToUpdate.value.id)
+  btnLoading.value = false
+  showDeleteModal.value = false
+}
 </script>
 <template>
   <div>
-    <GenericForm ref="form" :schema="schema">
-      <template #association_name>
-        <v-btn @click="form.reset()">ss</v-btn>
+    <Modal title="delete_user" v-model="showDeleteModal">
+      <template #content>
+        <h4>{{ $t('are_you_sure') }}</h4>
       </template>
-    </GenericForm>
+      <template #actions>
+        <v-btn flat color="primary" @click="showDeleteModal = false"> {{ $t('cancel') }} </v-btn>
+        <v-btn flat color="error" :loading="btnLoading" @click="callDeleteUser()">
+          {{ $t('delete') }}
+        </v-btn>
+      </template>
+    </Modal>
+    <AddEditUser v-model="showModal" :is-create="false" />
+    <Table
+      :total-items="usersData.total"
+      :items-per-page="params.limit"
+      :loadItems="getUsers"
+      :serverItems="usersData.data"
+      :search="params.search"
+      :loading="loading"
+      :headers="headers"
+    >
+      <template #actions="{ item }">
+        <div class="d-flex align-center ga-3">
+          <v-btn
+            size="small"
+            color="primary"
+            flat
+            icon="mdi-pencil-outline"
+            @click="setEditUser(item)"
+          ></v-btn>
+          <v-btn
+            size="small"
+            color="error"
+            flat
+            icon="mdi-trash-can-outline"
+            @click="setDeleteUser(item)"
+          ></v-btn>
+          <v-btn
+            size="small"
+            color="secondary"
+            :to="`/users/${item.id}`"
+            flat
+            icon="mdi-eye"
+          ></v-btn>
+        </div>
+      </template>
+    </Table>
   </div>
 </template>
 

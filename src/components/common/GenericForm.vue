@@ -14,7 +14,6 @@
       </template>
     </v-row>
     <slot name="submit"></slot>
-    <v-btn type="submit" color="primary">{{ $t('buttons.submit') }}</v-btn>
   </VForm>
 </template>
 

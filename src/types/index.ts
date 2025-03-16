@@ -2,7 +2,7 @@ export interface Field {
   filedKey: string
   label?: string
   disabled?: boolean
-  cols: { md: number; lg: number }
+  cols: { md: number; lg?: number }
   value?: string
   clearable?: boolean
   rules?: any[]
@@ -19,4 +19,13 @@ export interface SelectField extends Field {
   itemValue?: string
   itemTitle?: string
   returnObject?: boolean
+}
+
+export type User = {
+  id: number
+  first_name: string
+  last_name: string
+  email: string
+  role: 'admin' | 'editor' | 'viewer'
+  brief: string
 }

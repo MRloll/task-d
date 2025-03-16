@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import Alert from '@/components/app/Alert.vue'
 import { onBeforeMount } from 'vue'
 import { useLocale } from 'vuetify'
 import { useI18n } from 'vue-i18n'
@@ -21,6 +22,7 @@ onBeforeMount(() => {
 </script>
 
 <template>
+  <Alert />
   <RouterView />
 </template>
 
